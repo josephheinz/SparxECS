@@ -24,18 +24,17 @@ public class SparseSet<T> : ISparseSet
     /// </summary>
     /// <param name="id">The id of the entity being set</param>
     /// <param name="item">The object being set or added to the dense list</param>
-    public void Set(EntityID id, object item)
+    public void Set(EntityID id, T item)
     {
-        T typedItem = (T)item;
         int index = GetDenseIndex(id);
         if (index != -1)
         {
-            dense[index] = typedItem;
+            dense[index] = item;
             denseToId[index] = id;
             return;
         }
         SetDenseIndex(id, Size);
-        dense.Add(typedItem);
+        dense.Add(item);
         denseToId.Add(id);
     }
 

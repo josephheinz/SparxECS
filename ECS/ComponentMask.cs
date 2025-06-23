@@ -16,6 +16,13 @@ public class ComponentMask
         masks[idx] |= 1UL << offset;
     }
 
+    public void Set(int bit, byte value)
+    {
+      int idx = bit / 64;
+      int offset = bit % 64;
+      masks[idx] = 1UL << offset;
+    }
+
     public void Remove(int bit)
     {
         int idx = bit / 64;
