@@ -68,7 +68,7 @@ public class ECS
         var type = typeof(T);
         if (!typeToId.TryGetValue(type, out var id))
         {
-            throw new KeyNotFoundException($"No Sparse Set found for component type {type.Name}");
+            throw new KeyNotFoundException($"Component {type} not registered");
         }
 
         if (componentPools[id] is SparseSet<T> typedSet)
@@ -218,4 +218,535 @@ public class ECS
         }
 
     }
+
+    /// <summary>
+    /// Queries entities that have all T1, T2, and T3 components.
+    /// </summary>
+    /// <typeparam name="T1">The first component type.</typeparam>
+    /// <typeparam name="T2">The second component type.</typeparam>
+    /// <typeparam name="T3">The third component type.</typeparam>
+    /// <returns>
+    /// An enumerable of tuples containing components of type T1, T2 and T3 from entities that have all.
+    /// </returns>
+    public IEnumerable<(T1, T2, T3)> Query<T1, T2, T3>()
+    {
+        int[] componentIds = { GetComponentIndex<T1>(), GetComponentIndex<T2>(), GetComponentIndex<T3>() };
+        int shortestPoolId = componentIds[0];
+        foreach (int id in componentIds)
+        {
+            var pool = componentPools[id];
+            if (pool.Size() == 0) yield break;
+            if (pool.Size() < componentPools[shortestPoolId].Size())
+            {
+                shortestPoolId = id;
+            }
+        }
+
+        var shortestPool = componentPools[shortestPoolId];
+
+        var poolT1 = GetComponentPool<T1>();
+        var poolT2 = GetComponentPool<T2>();
+        var poolT3 = GetComponentPool<T3>();
+
+        int idT1 = componentIds[0];
+        int idT2 = componentIds[1];
+        int idT3 = componentIds[2];
+
+        for (int i = 0; i < shortestPool.Size(); i++)
+        {
+            EntityID id = shortestPool.UnsafeGetDenseToIdDirect(i);
+            if (!TryGetEntityMask(id, out ComponentMask mask)) continue;
+
+            if (mask.Has(idT1) && mask.Has(idT2) && mask.Has(idT3))
+            {
+                if (poolT1.TryGet(id, out var compT1) && poolT2.TryGet(id, out var compT2) && poolT3.TryGet(id, out var compT3))
+                {
+                    yield return (compT1, compT2, compT3);
+                }
+            }
+        }
+
+    }
+
+    /// <summary>
+    /// Queries entities that have all T1, T2, T3 and T4 components.
+    /// </summary>
+    /// <typeparam name="T1">The first component type.</typeparam>
+    /// <typeparam name="T2">The second component type.</typeparam>
+    /// <typeparam name="T3">The third component type.</typeparam>
+    /// <typeparam name="T4">The fourth component type.</typeparam>
+    /// <returns>
+    /// An enumerable of tuples containing components of type T1, T2, T3 and T4 from entities that have all.
+    /// </returns>
+    public IEnumerable<(T1, T2, T3, T4)> Query<T1, T2, T3, T4>()
+    {
+        int[] componentIds = { GetComponentIndex<T1>(), GetComponentIndex<T2>(), GetComponentIndex<T3>(), GetComponentIndex<T4>() };
+        int shortestPoolId = componentIds[0];
+        foreach (int id in componentIds)
+        {
+            var pool = componentPools[id];
+            if (pool.Size() == 0) yield break;
+            if (pool.Size() < componentPools[shortestPoolId].Size())
+            {
+                shortestPoolId = id;
+            }
+        }
+
+        var shortestPool = componentPools[shortestPoolId];
+
+        var poolT1 = GetComponentPool<T1>();
+        var poolT2 = GetComponentPool<T2>();
+        var poolT3 = GetComponentPool<T3>();
+        var poolT4 = GetComponentPool<T4>();
+
+        int idT1 = componentIds[0];
+        int idT2 = componentIds[1];
+        int idT3 = componentIds[2];
+        int idT4 = componentIds[3];
+
+        for (int i = 0; i < shortestPool.Size(); i++)
+        {
+            EntityID id = shortestPool.UnsafeGetDenseToIdDirect(i);
+            if (!TryGetEntityMask(id, out ComponentMask mask)) continue;
+
+            if (mask.Has(idT1) && mask.Has(idT2) && mask.Has(idT3) && mask.Has(idT4))
+            {
+                if (poolT1.TryGet(id, out var compT1) &&
+                    poolT2.TryGet(id, out var compT2) &&
+                    poolT3.TryGet(id, out var compT3) &&
+                    poolT4.TryGet(id, out var compT4))
+
+                {
+                    yield return (compT1, compT2, compT3, compT4);
+                }
+            }
+        }
+
+    }
+
+    /// <summary>
+    /// Queries entities that have all T1, T2, T3, T4, and T5 components.
+    /// </summary>
+    /// <typeparam name="T1">The first component type.</typeparam>
+    /// <typeparam name="T2">The second component type.</typeparam>
+    /// <typeparam name="T3">The third component type.</typeparam>
+    /// <typeparam name="T4">The fourth component type.</typeparam>
+    /// <typeparam name="T5">The fifth component type.</typeparam>
+    /// <returns>
+    /// An enumerable of tuples containing components of type T1, T2, T3, T4, and T5 from entities that have all.
+    /// </returns>
+    public IEnumerable<(T1, T2, T3, T4, T5)> Query<T1, T2, T3, T4, T5>()
+    {
+        int[] componentIds = { GetComponentIndex<T1>(), GetComponentIndex<T2>(), GetComponentIndex<T3>(), GetComponentIndex<T4>(), GetComponentIndex<T5>() };
+        int shortestPoolId = componentIds[0];
+        foreach (int id in componentIds)
+        {
+            var pool = componentPools[id];
+            if (pool.Size() == 0) yield break;
+            if (pool.Size() < componentPools[shortestPoolId].Size())
+            {
+                shortestPoolId = id;
+            }
+        }
+
+        var shortestPool = componentPools[shortestPoolId];
+
+        var poolT1 = GetComponentPool<T1>();
+        var poolT2 = GetComponentPool<T2>();
+        var poolT3 = GetComponentPool<T3>();
+        var poolT4 = GetComponentPool<T4>();
+        var poolT5 = GetComponentPool<T5>();
+
+        int idT1 = componentIds[0];
+        int idT2 = componentIds[1];
+        int idT3 = componentIds[2];
+        int idT4 = componentIds[3];
+        int idT5 = componentIds[4];
+
+        for (int i = 0; i < shortestPool.Size(); i++)
+        {
+            EntityID id = shortestPool.UnsafeGetDenseToIdDirect(i);
+            if (!TryGetEntityMask(id, out ComponentMask mask)) continue;
+
+            if (mask.Has(idT1) && mask.Has(idT2) && mask.Has(idT3) && mask.Has(idT4) && mask.Has(idT5))
+            {
+                if (poolT1.TryGet(id, out var compT1) &&
+                    poolT2.TryGet(id, out var compT2) &&
+                    poolT3.TryGet(id, out var compT3) &&
+                    poolT4.TryGet(id, out var compT4) &&
+                    poolT5.TryGet(id, out var compT5))
+
+                {
+                    yield return (compT1, compT2, compT3, compT4, compT5);
+                }
+            }
+        }
+
+    }
+
+    /// <summary>
+    /// Queries entities that have all T1, T2, T3, T4, T5 and T6 components.
+    /// </summary>
+    /// <typeparam name="T1">The first component type.</typeparam>
+    /// <typeparam name="T2">The second component type.</typeparam>
+    /// <typeparam name="T3">The third component type.</typeparam>
+    /// <typeparam name="T4">The fourth component type.</typeparam>
+    /// <typeparam name="T5">The fifth component type.</typeparam>
+    /// <typeparam name="T6">The sixth component type.</typeparam>
+    /// <returns>
+    /// An enumerable of tuples containing components of type T1, T2, T3, T4, T5 and T6 from entities that have all.
+    /// </returns>
+    public IEnumerable<(T1, T2, T3, T4, T5, T6)> Query<T1, T2, T3, T4, T5, T6>()
+    {
+        int[] componentIds = {
+          GetComponentIndex<T1>(),
+          GetComponentIndex<T2>(),
+          GetComponentIndex<T3>(),
+          GetComponentIndex<T4>(),
+          GetComponentIndex<T5>(),
+          GetComponentIndex<T6>()
+        };
+        int shortestPoolId = componentIds[0];
+        foreach (int id in componentIds)
+        {
+            var pool = componentPools[id];
+            if (pool.Size() == 0) yield break;
+            if (pool.Size() < componentPools[shortestPoolId].Size())
+            {
+                shortestPoolId = id;
+            }
+        }
+
+        var shortestPool = componentPools[shortestPoolId];
+
+        var poolT1 = GetComponentPool<T1>();
+        var poolT2 = GetComponentPool<T2>();
+        var poolT3 = GetComponentPool<T3>();
+        var poolT4 = GetComponentPool<T4>();
+        var poolT5 = GetComponentPool<T5>();
+        var poolT6 = GetComponentPool<T6>();
+
+        int idT1 = componentIds[0];
+        int idT2 = componentIds[1];
+        int idT3 = componentIds[2];
+        int idT4 = componentIds[3];
+        int idT5 = componentIds[4];
+        int idT6 = componentIds[5];
+
+        for (int i = 0; i < shortestPool.Size(); i++)
+        {
+            EntityID id = shortestPool.UnsafeGetDenseToIdDirect(i);
+            if (!TryGetEntityMask(id, out ComponentMask mask)) continue;
+
+            if (mask.Has(idT1) && mask.Has(idT2) && mask.Has(idT3) && mask.Has(idT4) && mask.Has(idT5) && mask.Has(idT6))
+            {
+                if (poolT1.TryGet(id, out var compT1) &&
+                    poolT2.TryGet(id, out var compT2) &&
+                    poolT3.TryGet(id, out var compT3) &&
+                    poolT4.TryGet(id, out var compT4) &&
+                    poolT5.TryGet(id, out var compT5) &&
+                    poolT6.TryGet(id, out var compT6))
+
+                {
+                    yield return (compT1, compT2, compT3, compT4, compT5, compT6);
+                }
+            }
+        }
+
+    }
+
+    /// <summary>
+    /// Queries entities that have all T1 through T7 components.
+    /// </summary>
+    /// <typeparam name="T1">The first component type.</typeparam>
+    /// <typeparam name="T2">The second component type.</typeparam>
+    /// <typeparam name="T3">The third component type.</typeparam>
+    /// <typeparam name="T4">The fourth component type.</typeparam>
+    /// <typeparam name="T5">The fifth component type.</typeparam>
+    /// <typeparam name="T6">The sixth component type.</typeparam>
+    /// <typeparam name="T7">The seventh component type.</typeparam>
+    /// <returns>
+    /// An enumerable of tuples containing components of type T1 through T7 from entities that have all.
+    /// </returns>
+    public IEnumerable<(T1, T2, T3, T4, T5, T6, T7)> Query<T1, T2, T3, T4, T5, T6, T7>()
+    {
+        int[] componentIds = {
+        GetComponentIndex<T1>(), GetComponentIndex<T2>(), GetComponentIndex<T3>(),
+        GetComponentIndex<T4>(), GetComponentIndex<T5>(), GetComponentIndex<T6>(), GetComponentIndex<T7>()
+    };
+        int shortestPoolId = componentIds[0];
+        foreach (int id in componentIds)
+        {
+            var pool = componentPools[id];
+            if (pool.Size() == 0) yield break;
+            if (pool.Size() < componentPools[shortestPoolId].Size())
+            {
+                shortestPoolId = id;
+            }
+        }
+
+        var shortestPool = componentPools[shortestPoolId];
+
+        var poolT1 = GetComponentPool<T1>();
+        var poolT2 = GetComponentPool<T2>();
+        var poolT3 = GetComponentPool<T3>();
+        var poolT4 = GetComponentPool<T4>();
+        var poolT5 = GetComponentPool<T5>();
+        var poolT6 = GetComponentPool<T6>();
+        var poolT7 = GetComponentPool<T7>();
+
+        int idT1 = componentIds[0];
+        int idT2 = componentIds[1];
+        int idT3 = componentIds[2];
+        int idT4 = componentIds[3];
+        int idT5 = componentIds[4];
+        int idT6 = componentIds[5];
+        int idT7 = componentIds[6];
+
+        for (int i = 0; i < shortestPool.Size(); i++)
+        {
+            EntityID id = shortestPool.UnsafeGetDenseToIdDirect(i);
+            if (!TryGetEntityMask(id, out ComponentMask mask)) continue;
+
+            if (mask.Has(idT1) && mask.Has(idT2) && mask.Has(idT3) && mask.Has(idT4) &&
+                mask.Has(idT5) && mask.Has(idT6) && mask.Has(idT7))
+            {
+                if (poolT1.TryGet(id, out var compT1) && poolT2.TryGet(id, out var compT2) &&
+                    poolT3.TryGet(id, out var compT3) && poolT4.TryGet(id, out var compT4) &&
+                    poolT5.TryGet(id, out var compT5) && poolT6.TryGet(id, out var compT6) &&
+                    poolT7.TryGet(id, out var compT7))
+                {
+                    yield return (compT1, compT2, compT3, compT4, compT5, compT6, compT7);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Queries entities that have all T1 through T8 components.
+    /// </summary>
+    /// <typeparam name="T1">The first component type.</typeparam>
+    /// <typeparam name="T2">The second component type.</typeparam>
+    /// <typeparam name="T3">The third component type.</typeparam>
+    /// <typeparam name="T4">The fourth component type.</typeparam>
+    /// <typeparam name="T5">The fifth component type.</typeparam>
+    /// <typeparam name="T6">The sixth component type.</typeparam>
+    /// <typeparam name="T7">The seventh component type.</typeparam>
+    /// <typeparam name="T8">The eighth component type.</typeparam>
+    /// <returns>
+    /// An enumerable of tuples containing components of type T1 through T8 from entities that have all.
+    /// </returns>
+    public IEnumerable<(T1, T2, T3, T4, T5, T6, T7, T8)> Query<T1, T2, T3, T4, T5, T6, T7, T8>()
+    {
+        int[] componentIds = {
+        GetComponentIndex<T1>(), GetComponentIndex<T2>(), GetComponentIndex<T3>(),
+        GetComponentIndex<T4>(), GetComponentIndex<T5>(), GetComponentIndex<T6>(),
+        GetComponentIndex<T7>(), GetComponentIndex<T8>()
+    };
+        int shortestPoolId = componentIds[0];
+        foreach (int id in componentIds)
+        {
+            var pool = componentPools[id];
+            if (pool.Size() == 0) yield break;
+            if (pool.Size() < componentPools[shortestPoolId].Size())
+            {
+                shortestPoolId = id;
+            }
+        }
+
+        var shortestPool = componentPools[shortestPoolId];
+
+        var poolT1 = GetComponentPool<T1>();
+        var poolT2 = GetComponentPool<T2>();
+        var poolT3 = GetComponentPool<T3>();
+        var poolT4 = GetComponentPool<T4>();
+        var poolT5 = GetComponentPool<T5>();
+        var poolT6 = GetComponentPool<T6>();
+        var poolT7 = GetComponentPool<T7>();
+        var poolT8 = GetComponentPool<T8>();
+
+        int idT1 = componentIds[0];
+        int idT2 = componentIds[1];
+        int idT3 = componentIds[2];
+        int idT4 = componentIds[3];
+        int idT5 = componentIds[4];
+        int idT6 = componentIds[5];
+        int idT7 = componentIds[6];
+        int idT8 = componentIds[7];
+
+        for (int i = 0; i < shortestPool.Size(); i++)
+        {
+            EntityID id = shortestPool.UnsafeGetDenseToIdDirect(i);
+            if (!TryGetEntityMask(id, out ComponentMask mask)) continue;
+
+            if (mask.Has(idT1) && mask.Has(idT2) && mask.Has(idT3) && mask.Has(idT4) &&
+                mask.Has(idT5) && mask.Has(idT6) && mask.Has(idT7) && mask.Has(idT8))
+            {
+                if (poolT1.TryGet(id, out var compT1) && poolT2.TryGet(id, out var compT2) &&
+                    poolT3.TryGet(id, out var compT3) && poolT4.TryGet(id, out var compT4) &&
+                    poolT5.TryGet(id, out var compT5) && poolT6.TryGet(id, out var compT6) &&
+                    poolT7.TryGet(id, out var compT7) && poolT8.TryGet(id, out var compT8))
+                {
+                    yield return (compT1, compT2, compT3, compT4, compT5, compT6, compT7, compT8);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Queries entities that have all T1 through T9 components.
+    /// </summary>
+    /// <typeparam name="T1">The first component type.</typeparam>
+    /// <typeparam name="T2">The second component type.</typeparam>
+    /// <typeparam name="T3">The third component type.</typeparam>
+    /// <typeparam name="T4">The fourth component type.</typeparam>
+    /// <typeparam name="T5">The fifth component type.</typeparam>
+    /// <typeparam name="T6">The sixth component type.</typeparam>
+    /// <typeparam name="T7">The seventh component type.</typeparam>
+    /// <typeparam name="T8">The eighth component type.</typeparam>
+    /// <typeparam name="T9">The ninth component type.</typeparam>
+    /// <returns>
+    /// An enumerable of tuples containing components of type T1 through T9 from entities that have all.
+    /// </returns>
+    public IEnumerable<(T1, T2, T3, T4, T5, T6, T7, T8, T9)> Query<T1, T2, T3, T4, T5, T6, T7, T8, T9>()
+    {
+        int[] componentIds = {
+        GetComponentIndex<T1>(), GetComponentIndex<T2>(), GetComponentIndex<T3>(),
+        GetComponentIndex<T4>(), GetComponentIndex<T5>(), GetComponentIndex<T6>(),
+        GetComponentIndex<T7>(), GetComponentIndex<T8>(), GetComponentIndex<T9>()
+    };
+        int shortestPoolId = componentIds[0];
+        foreach (int id in componentIds)
+        {
+            var pool = componentPools[id];
+            if (pool.Size() == 0) yield break;
+            if (pool.Size() < componentPools[shortestPoolId].Size())
+            {
+                shortestPoolId = id;
+            }
+        }
+
+        var shortestPool = componentPools[shortestPoolId];
+
+        var poolT1 = GetComponentPool<T1>();
+        var poolT2 = GetComponentPool<T2>();
+        var poolT3 = GetComponentPool<T3>();
+        var poolT4 = GetComponentPool<T4>();
+        var poolT5 = GetComponentPool<T5>();
+        var poolT6 = GetComponentPool<T6>();
+        var poolT7 = GetComponentPool<T7>();
+        var poolT8 = GetComponentPool<T8>();
+        var poolT9 = GetComponentPool<T9>();
+
+        int idT1 = componentIds[0];
+        int idT2 = componentIds[1];
+        int idT3 = componentIds[2];
+        int idT4 = componentIds[3];
+        int idT5 = componentIds[4];
+        int idT6 = componentIds[5];
+        int idT7 = componentIds[6];
+        int idT8 = componentIds[7];
+        int idT9 = componentIds[8];
+
+        for (int i = 0; i < shortestPool.Size(); i++)
+        {
+            EntityID id = shortestPool.UnsafeGetDenseToIdDirect(i);
+            if (!TryGetEntityMask(id, out ComponentMask mask)) continue;
+
+            if (mask.Has(idT1) && mask.Has(idT2) && mask.Has(idT3) && mask.Has(idT4) &&
+                mask.Has(idT5) && mask.Has(idT6) && mask.Has(idT7) && mask.Has(idT8) &&
+                mask.Has(idT9))
+            {
+                if (poolT1.TryGet(id, out var compT1) && poolT2.TryGet(id, out var compT2) &&
+                    poolT3.TryGet(id, out var compT3) && poolT4.TryGet(id, out var compT4) &&
+                    poolT5.TryGet(id, out var compT5) && poolT6.TryGet(id, out var compT6) &&
+                    poolT7.TryGet(id, out var compT7) && poolT8.TryGet(id, out var compT8) &&
+                    poolT9.TryGet(id, out var compT9))
+                {
+                    yield return (compT1, compT2, compT3, compT4, compT5, compT6, compT7, compT8, compT9);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Queries entities that have all T1 through T10 components.
+    /// </summary>
+    /// <typeparam name="T1">The first component type.</typeparam>
+    /// <typeparam name="T2">The second component type.</typeparam>
+    /// <typeparam name="T3">The third component type.</typeparam>
+    /// <typeparam name="T4">The fourth component type.</typeparam>
+    /// <typeparam name="T5">The fifth component type.</typeparam>
+    /// <typeparam name="T6">The sixth component type.</typeparam>
+    /// <typeparam name="T7">The seventh component type.</typeparam>
+    /// <typeparam name="T8">The eighth component type.</typeparam>
+    /// <typeparam name="T9">The ninth component type.</typeparam>
+    /// <typeparam name="T10">The tenth component type.</typeparam>
+    /// <returns>
+    /// An enumerable of tuples containing components of type T1 through T10 from entities that have all.
+    /// </returns>
+    public IEnumerable<(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)> Query<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>()
+    {
+        int[] componentIds = {
+        GetComponentIndex<T1>(), GetComponentIndex<T2>(), GetComponentIndex<T3>(),
+        GetComponentIndex<T4>(), GetComponentIndex<T5>(), GetComponentIndex<T6>(),
+        GetComponentIndex<T7>(), GetComponentIndex<T8>(), GetComponentIndex<T9>(),
+        GetComponentIndex<T10>()
+    };
+        int shortestPoolId = componentIds[0];
+        foreach (int id in componentIds)
+        {
+            var pool = componentPools[id];
+            if (pool.Size() == 0) yield break;
+            if (pool.Size() < componentPools[shortestPoolId].Size())
+            {
+                shortestPoolId = id;
+            }
+        }
+
+        var shortestPool = componentPools[shortestPoolId];
+
+        var poolT1 = GetComponentPool<T1>();
+        var poolT2 = GetComponentPool<T2>();
+        var poolT3 = GetComponentPool<T3>();
+        var poolT4 = GetComponentPool<T4>();
+        var poolT5 = GetComponentPool<T5>();
+        var poolT6 = GetComponentPool<T6>();
+        var poolT7 = GetComponentPool<T7>();
+        var poolT8 = GetComponentPool<T8>();
+        var poolT9 = GetComponentPool<T9>();
+        var poolT10 = GetComponentPool<T10>();
+
+        int idT1 = componentIds[0];
+        int idT2 = componentIds[1];
+        int idT3 = componentIds[2];
+        int idT4 = componentIds[3];
+        int idT5 = componentIds[4];
+        int idT6 = componentIds[5];
+        int idT7 = componentIds[6];
+        int idT8 = componentIds[7];
+        int idT9 = componentIds[8];
+        int idT10 = componentIds[9];
+
+        for (int i = 0; i < shortestPool.Size(); i++)
+        {
+            EntityID id = shortestPool.UnsafeGetDenseToIdDirect(i);
+            if (!TryGetEntityMask(id, out ComponentMask mask)) continue;
+
+            if (mask.Has(idT1) && mask.Has(idT2) && mask.Has(idT3) && mask.Has(idT4) &&
+                mask.Has(idT5) && mask.Has(idT6) && mask.Has(idT7) && mask.Has(idT8) &&
+                mask.Has(idT9) && mask.Has(idT10))
+            {
+                if (poolT1.TryGet(id, out var compT1) && poolT2.TryGet(id, out var compT2) &&
+                    poolT3.TryGet(id, out var compT3) && poolT4.TryGet(id, out var compT4) &&
+                    poolT5.TryGet(id, out var compT5) && poolT6.TryGet(id, out var compT6) &&
+                    poolT7.TryGet(id, out var compT7) && poolT8.TryGet(id, out var compT8) &&
+                    poolT9.TryGet(id, out var compT9) && poolT10.TryGet(id, out var compT10))
+                {
+                    yield return (compT1, compT2, compT3, compT4, compT5, compT6, compT7, compT8, compT9, compT10);
+                }
+            }
+        }
+    }
+
 }
