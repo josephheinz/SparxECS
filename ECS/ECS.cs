@@ -200,6 +200,12 @@ public class ECS
         }
     }
 
+
+    /*
+     * Turn back before your eyes melt
+     * The follow overflows are NSFW
+     * */
+
     /// <summary>
     /// Queries entities that have both T1 and T2 components.
     /// </summary>
