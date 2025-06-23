@@ -4,6 +4,8 @@ interface ISparseSet
 {
     void Delete(EntityID id);
     void Clear();
+    int Size();
+    int UnsafeGetDenseToIdDirect(int index);
 };
 
 public class SparseSet<T> : ISparseSet
@@ -33,7 +35,7 @@ public class SparseSet<T> : ISparseSet
             denseToId[index] = id;
             return;
         }
-        SetDenseIndex(id, Size);
+        SetDenseIndex(id, Size());
         dense.Add(item);
         denseToId.Add(id);
     }
@@ -68,7 +70,7 @@ public class SparseSet<T> : ISparseSet
             return;
         }
 
-        int lastDenseIndex = Size - 1;
+        int lastDenseIndex = Size() - 1;
 
         SetDenseIndex(denseToId[lastDenseIndex], deletedIndex);
         SetDenseIndex(id, -1);
@@ -81,8 +83,8 @@ public class SparseSet<T> : ISparseSet
         denseToId[lastDenseIndex] = denseToId[deletedIndex];
         denseToId[deletedIndex] = tempId;
 
-        dense.RemoveAt(Size - 1);
-        denseToId.RemoveAt(Size - 1);
+        dense.RemoveAt(Size() - 1);
+        denseToId.RemoveAt(Size() - 1);
     }
 
     /// <summary>
@@ -90,10 +92,31 @@ public class SparseSet<T> : ISparseSet
     /// </summary>
     public void Clear()
     {
-        denseToId.RemoveRange(0, Size);
-        dense.RemoveRange(0, Size);
+        denseToId.RemoveRange(0, Size());
+        dense.RemoveRange(0, Size());
         sparsePages = new List<Sparse>();
     }
+
+    /// <summary>
+    /// DON'T USE UNLESS YOU KNOW WHAT YOU'RE DOING
+    /// </summary>
+    /// <param name="index">Index of dense object wanted</param>
+    /// <returns>The dense object at the given index</return>
+    public T UnsafeGetDenseDirect(int index)
+    {
+        return dense[index];
+    }
+
+    /// <summary>
+    /// DON'T USE UNLESS YOU KNOW WHAT YOU'RE DOING
+    /// </summary>
+    /// <param name="index">Index of dense object wanted</param>
+    /// <returns>The dense object at the given index</return>
+    public int UnsafeGetDenseToIdDirect(int index)
+    {
+        return denseToId[index];
+    }
+
 
     /// <summary>
     /// Sets a pointer from a sparse id to a dense item
@@ -133,6 +156,10 @@ public class SparseSet<T> : ISparseSet
         return -1;
     }
 
-    public int Size => dense.Count;
-    public bool IsEmpty => Size > 0;
+    public int Size()
+    {
+        return dense.Count;
+    }
+
+    public bool IsEmpty => Size() > 0;
 }
