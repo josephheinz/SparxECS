@@ -108,6 +108,33 @@ public class ECS
     }
 
     /// <summary>
+    /// Sets a component of type T to an ECS entity
+    /// </summary>
+    /// <param name="id">Id of the entity being targeted</param>
+    /// <param name="component">Value of the component being set</param>
+    public void Set<T>(EntityID id, T component = default!)
+    {
+        if (component == null)
+        {
+            throw new ArgumentNullException($"{nameof(component)} : Cannot add a null component");
+        }
+
+        SparseSet<T> pool = GetComponentPool<T>();
+
+        if (!pool.TryGet(id, out T value))
+        {
+            Add<T>(id, component);
+            return;
+        }
+
+        if (TryGetEntityMask(id, out ComponentMask mask))
+        {
+            SetComponentMask<T>(mask, 1);
+        }
+        pool.Set(id, component);
+    }
+
+    /// <summary>
     /// Gets the component T if the entity has it
     /// </summary>
     /// <param name="id">Id of an entity to search for</param>
