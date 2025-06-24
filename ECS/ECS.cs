@@ -24,12 +24,15 @@ public class ECS
 
     private List<ComponentMask> entityMasks; // Every EntityID maps 1:1 to their ComponentMask
 
+    private Queue<EntityID> usuableIds;
+
     public ECS()
     {
         componentPools = new List<ISparseSet>();
         typeToId = new Dictionary<Type, int>();
         idToType = new List<Type>();
         entityMasks = new List<ComponentMask>();
+        usuableIds = new Queue<EntityID>();
     }
 
     /// <summary>
@@ -50,20 +53,32 @@ public class ECS
     public EntityID AddEntity()
     {
         entityCount++;
-        highestEntityId++;
+        if (usuableIds.Count == 0)
+        {
+            highestEntityId++;
 
-        entityMasks.Add(new ComponentMask(maxComponents));
+            entityMasks.Add(new ComponentMask(maxComponents));
 
-        EntityID id = highestEntityId;
+            EntityID id = highestEntityId;
 
-        return id;
+            return id;
+        }
+        else
+        {
+            EntityID newId = usuableIds.Dequeue();
+            if (newId > highestEntityId) highestEntityId = newId;
+            entityMasks[newId] = new ComponentMask(maxComponents);
+
+            return newId;
+        }
+
     }
 
     /// <summary>
     /// Gets the sparse set for a given component T
     /// </summary>
     /// <returns>The sparse set for component T or throws an exception</returns>
-    public SparseSet<T> GetComponentPool<T>()
+    private SparseSet<T> GetComponentPool<T>()
     {
         var type = typeof(T);
         if (!typeToId.TryGetValue(type, out var id))
@@ -147,12 +162,113 @@ public class ECS
     }
 
     /// <summary>
+    /// Removes a component T from an entity
+    /// </summary>
+    /// <param name="id">Id of the entity being affected</param>
+    public void Remove<T>(EntityID id)
+    {
+        SparseSet<T> pool = GetComponentPool<T>();
+        if (!pool.TryGet(id, out T component)) return;
+        pool.Delete(id);
+    }
+
+    /// <summary>
+    /// Returns whether or not an ECS entity has a component
+    /// </summary>
+    /// <param name="id">Id of the entity being searched</param>
+    /// <returns>True if entity has the given component T, else false</returns>
+    public bool HasComponent<T>(EntityID id)
+    {
+        if (!TryGetEntityMask(id, out ComponentMask mask)) throw new KeyNotFoundException($"Entity with id {id} does not have a ComponentMask");
+        if (!typeToId.TryGetValue(typeof(T), out int componentId)) throw new KeyNotFoundException($"Type {nameof(T)} is not registered");
+        return mask.Has(componentId);
+    }
+
+    /// <summary>
+    /// Delete an entity from the ECS
+    /// </summary>
+    /// <param name="id">Id of the entity being deleted</param>
+    public void DeleteEntity(EntityID id)
+    {
+        if (!TryGetEntityMask(id, out ComponentMask mask)) throw new KeyNotFoundException($"Entity id {id} does not have a ComponentMask");
+        for (int i = 0; i < mask.Length; i++)
+        {
+            if (!mask.Has(i)) continue;
+
+            if (i < componentPools.Count)
+            {
+                var pool = componentPools[i];
+
+                pool.Delete(id);
+                mask.Remove(i);
+            }
+        }
+
+        entityCount--;
+        usuableIds.Enqueue(id);
+
+    }
+
+    /// <summary>
+    /// Clones an entity to a new exact version
+    /// </summary>
+    /// <param name="id">Entity being cloned</param>
+    /// <returns>The id of the new clone entity</returns>
+    public EntityID CloneEntity(EntityID id)
+    {
+        if (!ValidateEntity(id)) return -1;
+        EntityID newId = AddEntity();
+        if (!ValidateEntity(newId)) DeleteEntity(newId);
+        TryGetEntityMask(id, out ComponentMask mask);
+        TryGetEntityMask(newId, out ComponentMask newMask);
+        for (int i = 0; i < mask.Length; i++)
+        {
+            if (!mask.Has(i)) continue;
+            Type componentType = idToType[i];
+            var method = typeof(ECS).GetMethod("CopyComponent")!.MakeGenericMethod(componentType);
+            method.Invoke(this, new object[] { id, newId });
+        }
+
+        return newId;
+    }
+
+    /// <summary>
+    /// Copies a component from one entity to another
+    /// </summary>
+    /// <typeparam name="T">Type of component being copied</typeparam>
+    /// <param name="destination">Entity being copied to</param>
+    /// <param name="source">Entity being copied from</param>
+    public void CopyComponent<T>(EntityID source, EntityID destination)
+    {
+        if (!ValidateEntity(source)) return;
+        var pool = GetComponentPool<T>();
+        if (pool.TryGet(source, out var comp))
+        {
+            pool.Set(destination, comp);
+            TryGetEntityMask(destination, out ComponentMask mask);
+            SetComponentMask<T>(mask, 1);
+        }
+    }
+
+    /// <summary>
+    /// Makes sure a given entity is valid
+    /// </summary>
+    /// <param name="id">Id of the entity being validated</param>
+    /// <returns>True if entity is valid, else not</returns>
+    public bool ValidateEntity(EntityID id)
+    {
+        if (!TryGetEntityMask(id, out ComponentMask mask)) return false;
+        if (id > highestEntityId) return false;
+        return true;
+    }
+
+    /// <summary>
     /// Tries to get a component mask of a given entity
     /// </summary>
     /// <param name="id">Id of entity whose mask is being searched for</param>
     /// <param name="mask">An out variable to reference the entity's mask if its found, empty mask if not.</param>
     /// <returns>True if entity has a valid component mask</returns>
-    public bool TryGetEntityMask(EntityID id, out ComponentMask mask)
+    private bool TryGetEntityMask(EntityID id, out ComponentMask mask)
     {
         mask = new ComponentMask();
         if (id >= 0 && id < entityMasks.Count)
@@ -168,7 +284,7 @@ public class ECS
     /// </summary>
     /// <param name="mask">The mask being set</param>
     /// <param name="value">The value being set</param>
-    public void SetComponentMask<Component>(ComponentMask mask, byte value)
+    private void SetComponentMask<Component>(ComponentMask mask, byte value)
     {
         int bitPos = GetComponentIndex<Component>();
         mask.Set(bitPos, value);
@@ -178,7 +294,7 @@ public class ECS
     /// Gets the index of a component in the ECS component registry
     /// </summary>
     /// <returns>The id of the component in the registry</returns>
-    public int GetComponentIndex<Component>()
+    private int GetComponentIndex<Component>()
     {
         if (typeToId.TryGetValue(typeof(Component), out int index)) return index;
         return -1;
@@ -199,7 +315,6 @@ public class ECS
             yield return pool.UnsafeGetDenseDirect(i);
         }
     }
-
 
     /*
      * Turn back before your eyes melt

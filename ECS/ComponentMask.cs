@@ -36,4 +36,6 @@ public class ComponentMask
         int offset = bit % 64;
         return (masks[idx] & (1UL << offset)) != 0;
     }
+
+    public int Length => masks.Length * 64;
 }
