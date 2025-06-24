@@ -52,15 +52,12 @@ public class ECS
     /// <returns>The id of the newly created entity</returns>
     public EntityID AddEntity()
     {
-        entityCount++;
         if (usuableIds.Count == 0)
         {
-            highestEntityId++;
-
             entityMasks.Add(new ComponentMask(maxComponents));
-
             EntityID id = highestEntityId;
-
+            highestEntityId++;
+            entityCount++;
             return id;
         }
         else
@@ -68,7 +65,7 @@ public class ECS
             EntityID newId = usuableIds.Dequeue();
             if (newId > highestEntityId) highestEntityId = newId;
             entityMasks[newId] = new ComponentMask(maxComponents);
-
+            entityCount++;
             return newId;
         }
 
@@ -190,6 +187,7 @@ public class ECS
     /// <param name="id">Id of the entity being deleted</param>
     public void DeleteEntity(EntityID id)
     {
+        if (!ValidateEntity(id)) throw new KeyNotFoundException($"Entity with id {id} is invalid");
         if (!TryGetEntityMask(id, out ComponentMask mask)) throw new KeyNotFoundException($"Entity id {id} does not have a ComponentMask");
         for (int i = 0; i < mask.Length; i++)
         {
@@ -204,6 +202,7 @@ public class ECS
             }
         }
 
+        entityMasks[id] = new ComponentMask(maxComponents);
         entityCount--;
         usuableIds.Enqueue(id);
 
@@ -257,8 +256,10 @@ public class ECS
     /// <returns>True if entity is valid, else not</returns>
     public bool ValidateEntity(EntityID id)
     {
-        if (!TryGetEntityMask(id, out ComponentMask mask)) return false;
+        if (id < 0) return false;
         if (id > highestEntityId) return false;
+        if (usuableIds.Contains(id)) return false;
+        if (!TryGetEntityMask(id, out ComponentMask mask)) return false;
         return true;
     }
 
