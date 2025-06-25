@@ -46,6 +46,12 @@ public class ECS
         idToType.Add(typeof(T));
     }
 
+    public bool ValidateComponent<T>()
+    {
+        if (!idToType.Contains(typeof(T))) return false;
+        return true;
+    }
+
     /// <summary>
     /// Adds a new entity to the ECS
     /// </summary>
@@ -155,7 +161,7 @@ public class ECS
     {
         SparseSet<T> pool = GetComponentPool<T>();
         if (pool.TryGet(id, out T component)) return component;
-        return default!;
+        return default(T);
     }
 
     /// <summary>
@@ -164,9 +170,13 @@ public class ECS
     /// <param name="id">Id of the entity being affected</param>
     public void Remove<T>(EntityID id)
     {
+        if (!HasComponent<T>(id)) return;
         SparseSet<T> pool = GetComponentPool<T>();
         if (!pool.TryGet(id, out T component)) return;
+        if (!TryGetEntityMask(id, out ComponentMask mask)) return;
+        if (!typeToId.TryGetValue(typeof(T), out var compId)) return;
         pool.Delete(id);
+        mask.Remove(compId);
     }
 
     /// <summary>
