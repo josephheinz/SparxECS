@@ -43,15 +43,17 @@ public class ComponentTests
         ecs.RegisterComponent<A>();
         var entity = ecs.AddEntity();
         ecs.Add<A>(entity, comp);
-        
+
         Assert.True(ecs.HasComponent<A>(entity));
 
-        ecs.Remove<A>(entity);
-
+        var remove = ecs.Remove<A>(entity);
+        Assert.True(remove);
         Assert.False(ecs.HasComponent<A>(entity));
 
-        A? emptyA = default(A);
-        Assert.Equal(emptyA, ecs.Get<A>(entity));
+        A emptyA = default(A);
+        Assert.Equal(emptyA.X, ecs.Get<A>(entity).X);
     }
+
+
 }
 

@@ -104,6 +104,7 @@ public class ECS
     /// <param name="component">Value of the component being added</param>
     public void Add<T>(EntityID id, T component = default!)
     {
+        if (!ValidateEntity(id)) return;
         if (component == null)
         {
             throw new ArgumentNullException($"{nameof(component)} : Cannot add a null component");
@@ -116,10 +117,8 @@ public class ECS
             return;
         }
 
-        if (TryGetEntityMask(id, out ComponentMask mask))
-        {
-            SetComponentMask<T>(mask, 1);
-        }
+        ComponentMask mask = entityMasks[id];
+        SetComponentMask<T>(mask, 1);
 
         pool.Set(id, component);
 
@@ -132,6 +131,7 @@ public class ECS
     /// <param name="component">Value of the component being set</param>
     public void Set<T>(EntityID id, T component = default!)
     {
+        if (!ValidateEntity(id)) return;
         if (component == null)
         {
             throw new ArgumentNullException($"{nameof(component)} : Cannot add a null component");
@@ -145,10 +145,8 @@ public class ECS
             return;
         }
 
-        if (TryGetEntityMask(id, out ComponentMask mask))
-        {
-            SetComponentMask<T>(mask, 1);
-        }
+        ComponentMask mask = entityMasks[id];
+        SetComponentMask<T>(mask, 1);
         pool.Set(id, component);
     }
 
@@ -168,15 +166,20 @@ public class ECS
     /// Removes a component T from an entity
     /// </summary>
     /// <param name="id">Id of the entity being affected</param>
-    public void Remove<T>(EntityID id)
+    public bool Remove<T>(EntityID id)
     {
-        if (!HasComponent<T>(id)) return;
+        if (!ValidateEntity(id)) return false;
+        if (!HasComponent<T>(id)) return false;
+        if (!ValidateComponent<T>()) return false;
+
         SparseSet<T> pool = GetComponentPool<T>();
-        if (!pool.TryGet(id, out T component)) return;
-        if (!TryGetEntityMask(id, out ComponentMask mask)) return;
-        if (!typeToId.TryGetValue(typeof(T), out var compId)) return;
+        if (!pool.TryGet(id, out T component)) return false;
+
+        ComponentMask mask = entityMasks[id];
+        int compId = typeToId[typeof(T)];
         pool.Delete(id);
         mask.Remove(compId);
+        return true;
     }
 
     /// <summary>
@@ -186,8 +189,9 @@ public class ECS
     /// <returns>True if entity has the given component T, else false</returns>
     public bool HasComponent<T>(EntityID id)
     {
-        if (!TryGetEntityMask(id, out ComponentMask mask)) throw new KeyNotFoundException($"Entity with id {id} does not have a ComponentMask");
-        if (!typeToId.TryGetValue(typeof(T), out int componentId)) throw new KeyNotFoundException($"Type {nameof(T)} is not registered");
+        if (!ValidateEntity(id)) return false;
+        ComponentMask mask = entityMasks[id];
+        if (!typeToId.TryGetValue(typeof(T), out int componentId)) return false;
         return mask.Has(componentId);
     }
 
@@ -198,7 +202,7 @@ public class ECS
     public void DeleteEntity(EntityID id)
     {
         if (!ValidateEntity(id)) throw new KeyNotFoundException($"Entity with id {id} is invalid");
-        if (!TryGetEntityMask(id, out ComponentMask mask)) throw new KeyNotFoundException($"Entity id {id} does not have a ComponentMask");
+        ComponentMask mask = entityMasks[id];
         for (int i = 0; i < mask.Length; i++)
         {
             if (!mask.Has(i)) continue;
@@ -226,10 +230,12 @@ public class ECS
     public EntityID CloneEntity(EntityID id)
     {
         if (!ValidateEntity(id)) return -1;
+
         EntityID newId = AddEntity();
-        if (!ValidateEntity(newId)) DeleteEntity(newId);
-        TryGetEntityMask(id, out ComponentMask mask);
-        TryGetEntityMask(newId, out ComponentMask newMask);
+
+        ComponentMask mask = entityMasks[id];
+        ComponentMask newMask = entityMasks[newId];
+
         for (int i = 0; i < mask.Length; i++)
         {
             if (!mask.Has(i)) continue;
@@ -254,7 +260,7 @@ public class ECS
         if (pool.TryGet(source, out var comp))
         {
             pool.Set(destination, comp);
-            TryGetEntityMask(destination, out ComponentMask mask);
+            ComponentMask mask = entityMasks[destination];
             SetComponentMask<T>(mask, 1);
         }
     }
@@ -269,7 +275,6 @@ public class ECS
         if (id < 0) return false;
         if (id > highestEntityId) return false;
         if (usuableIds.Contains(id)) return false;
-        if (!TryGetEntityMask(id, out ComponentMask mask)) return false;
         return true;
     }
 
@@ -365,7 +370,8 @@ public class ECS
         for (int i = 0; i < shortestPool.Size(); i++)
         {
             EntityID id = shortestPool.UnsafeGetDenseToIdDirect(i);
-            if (!TryGetEntityMask(id, out ComponentMask mask)) continue;
+            if (!ValidateEntity(id)) continue;
+            ComponentMask mask = entityMasks[id];
 
             if (mask.Has(idT1) && mask.Has(idT2))
             {

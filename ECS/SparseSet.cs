@@ -58,6 +58,11 @@ public class SparseSet<T> : ISparseSet
         return false;
     }
 
+    public bool Has(EntityID id)
+    {
+        return GetDenseIndex(id) != -1;
+    }
+
     /// <summary>
     /// Delete a given entity from the dense list from their id
     /// </summary>
@@ -65,26 +70,26 @@ public class SparseSet<T> : ISparseSet
     {
         int deletedIndex = GetDenseIndex(id);
 
-        if (IsEmpty || deletedIndex == -1)
+        if (IsEmpty || deletedIndex == -1 || !Has(id))
         {
             return;
         }
 
         int lastDenseIndex = Size() - 1;
 
-        SetDenseIndex(denseToId[lastDenseIndex], deletedIndex);
-        SetDenseIndex(id, -1);
-
         var tempItem = dense[lastDenseIndex];
         dense[lastDenseIndex] = dense[deletedIndex];
         dense[deletedIndex] = tempItem;
+
+        SetDenseIndex(denseToId[lastDenseIndex], deletedIndex);
+        SetDenseIndex(id, -1);
 
         int tempId = denseToId[lastDenseIndex];
         denseToId[lastDenseIndex] = denseToId[deletedIndex];
         denseToId[deletedIndex] = tempId;
 
-        dense.RemoveAt(Size() - 1);
         denseToId.RemoveAt(Size() - 1);
+        dense.RemoveAt(Size() - 1);
     }
 
     /// <summary>
@@ -128,13 +133,14 @@ public class SparseSet<T> : ISparseSet
         int page = id / Sparse.SPARSE_MAX_SIZE;
         int sparseIndex = id % Sparse.SPARSE_MAX_SIZE;
 
-        if (page >= sparsePages.Count)
+        while (page >= sparsePages.Count)
         {
             sparsePages.Add(new Sparse());
         }
 
         Sparse sparse = sparsePages[page];
         sparse[sparseIndex] = index;
+        sparsePages[page] = sparse;
     }
 
     /// <summary>
@@ -161,5 +167,5 @@ public class SparseSet<T> : ISparseSet
         return dense.Count;
     }
 
-    public bool IsEmpty => Size() > 0;
+    public bool IsEmpty => Size() == 0;
 }
