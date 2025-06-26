@@ -105,7 +105,7 @@ public class ECS
     public void Add<T>(EntityID id, T component = default!)
     {
         if (!ValidateEntity(id)) return;
-        if(!ValidateComponent<T>()) throw new KeyNotFoundException($"{nameof(T)} is not registered");
+        if (!ValidateComponent<T>()) throw new KeyNotFoundException($"{nameof(T)} is not registered");
         if (component == null)
         {
             throw new ArgumentNullException($"{nameof(component)} : Cannot add a null component");
@@ -155,7 +155,7 @@ public class ECS
     /// <returns>Value of entity's component or null if entity doesn't have component</param>
     public T? Get<T>(EntityID id)
     {
-        if(!HasComponent<T>(id)) return default(T);
+        if (!HasComponent<T>(id)) return default(T);
         SparseSet<T> pool = GetComponentPool<T>();
         if (pool.TryGet(id, out T component)) return component;
         return default(T);
@@ -323,18 +323,20 @@ public class ECS
     /// <returns>
     /// An enumerable of tuples containing component of type T from entities that have it.
     /// </returns>
-    public IEnumerable<T> Query<T>()
+    public IEnumerable<T> Query<T>(Func<EntityID, bool>? filter = null)
     {
         SparseSet<T> pool = GetComponentPool<T>();
         for (int i = 0; i < pool.Size(); i++)
         {
-            yield return pool.UnsafeGetDenseDirect(i);
+            EntityID id = pool.UnsafeGetDenseToIdDirect(i);
+            if (filter == null || filter(id))
+                yield return pool.UnsafeGetDenseDirect(i);
         }
     }
 
     /*
      * Turn back before your eyes melt
-     * The follow overflows are NSFW
+     * The follow overloads are NSFW
      * */
 
     /// <summary>
@@ -345,7 +347,7 @@ public class ECS
     /// <returns>
     /// An enumerable of tuples containing components of type T1 and T2 from entities that have both.
     /// </returns>
-    public IEnumerable<(T1, T2)> Query<T1, T2>()
+    public IEnumerable<(T1, T2)> Query<T1, T2>(Func<EntityID, bool>? filter = null)
     {
         int[] componentIds = { GetComponentIndex<T1>(), GetComponentIndex<T2>() };
         int shortestPoolId = componentIds[0];
@@ -377,7 +379,8 @@ public class ECS
             {
                 if (poolT1.TryGet(id, out var compT1) && poolT2.TryGet(id, out var compT2))
                 {
-                    yield return (compT1, compT2);
+                    if (filter == null || filter(id))
+                        yield return (compT1, compT2);
                 }
             }
         }
@@ -393,7 +396,7 @@ public class ECS
     /// <returns>
     /// An enumerable of tuples containing components of type T1, T2 and T3 from entities that have all.
     /// </returns>
-    public IEnumerable<(T1, T2, T3)> Query<T1, T2, T3>()
+    public IEnumerable<(T1, T2, T3)> Query<T1, T2, T3>(Func<EntityID, bool>? filter = null)
     {
         int[] componentIds = { GetComponentIndex<T1>(), GetComponentIndex<T2>(), GetComponentIndex<T3>() };
         int shortestPoolId = componentIds[0];
@@ -426,7 +429,8 @@ public class ECS
             {
                 if (poolT1.TryGet(id, out var compT1) && poolT2.TryGet(id, out var compT2) && poolT3.TryGet(id, out var compT3))
                 {
-                    yield return (compT1, compT2, compT3);
+                    if (filter == null || filter(id))
+                        yield return (compT1, compT2, compT3);
                 }
             }
         }
@@ -443,7 +447,7 @@ public class ECS
     /// <returns>
     /// An enumerable of tuples containing components of type T1, T2, T3 and T4 from entities that have all.
     /// </returns>
-    public IEnumerable<(T1, T2, T3, T4)> Query<T1, T2, T3, T4>()
+    public IEnumerable<(T1, T2, T3, T4)> Query<T1, T2, T3, T4>(Func<EntityID, bool>? filter = null)
     {
         int[] componentIds = { GetComponentIndex<T1>(), GetComponentIndex<T2>(), GetComponentIndex<T3>(), GetComponentIndex<T4>() };
         int shortestPoolId = componentIds[0];
@@ -482,7 +486,8 @@ public class ECS
                     poolT4.TryGet(id, out var compT4))
 
                 {
-                    yield return (compT1, compT2, compT3, compT4);
+                    if (filter == null || filter(id))
+                        yield return (compT1, compT2, compT3, compT4);
                 }
             }
         }
@@ -500,7 +505,7 @@ public class ECS
     /// <returns>
     /// An enumerable of tuples containing components of type T1, T2, T3, T4, and T5 from entities that have all.
     /// </returns>
-    public IEnumerable<(T1, T2, T3, T4, T5)> Query<T1, T2, T3, T4, T5>()
+    public IEnumerable<(T1, T2, T3, T4, T5)> Query<T1, T2, T3, T4, T5>(Func<EntityID, bool>? filter = null)
     {
         int[] componentIds = { GetComponentIndex<T1>(), GetComponentIndex<T2>(), GetComponentIndex<T3>(), GetComponentIndex<T4>(), GetComponentIndex<T5>() };
         int shortestPoolId = componentIds[0];
@@ -542,7 +547,8 @@ public class ECS
                     poolT5.TryGet(id, out var compT5))
 
                 {
-                    yield return (compT1, compT2, compT3, compT4, compT5);
+                    if (filter == null || filter(id))
+                        yield return (compT1, compT2, compT3, compT4, compT5);
                 }
             }
         }
@@ -561,7 +567,7 @@ public class ECS
     /// <returns>
     /// An enumerable of tuples containing components of type T1, T2, T3, T4, T5 and T6 from entities that have all.
     /// </returns>
-    public IEnumerable<(T1, T2, T3, T4, T5, T6)> Query<T1, T2, T3, T4, T5, T6>()
+    public IEnumerable<(T1, T2, T3, T4, T5, T6)> Query<T1, T2, T3, T4, T5, T6>(Func<EntityID, bool>? filter = null)
     {
         int[] componentIds = {
           GetComponentIndex<T1>(),
@@ -613,7 +619,8 @@ public class ECS
                     poolT6.TryGet(id, out var compT6))
 
                 {
-                    yield return (compT1, compT2, compT3, compT4, compT5, compT6);
+                    if (filter == null || filter(id))
+                        yield return (compT1, compT2, compT3, compT4, compT5, compT6);
                 }
             }
         }
@@ -633,7 +640,7 @@ public class ECS
     /// <returns>
     /// An enumerable of tuples containing components of type T1 through T7 from entities that have all.
     /// </returns>
-    public IEnumerable<(T1, T2, T3, T4, T5, T6, T7)> Query<T1, T2, T3, T4, T5, T6, T7>()
+    public IEnumerable<(T1, T2, T3, T4, T5, T6, T7)> Query<T1, T2, T3, T4, T5, T6, T7>(Func<EntityID, bool>? filter = null)
     {
         int[] componentIds = {
         GetComponentIndex<T1>(), GetComponentIndex<T2>(), GetComponentIndex<T3>(),
@@ -681,7 +688,8 @@ public class ECS
                     poolT5.TryGet(id, out var compT5) && poolT6.TryGet(id, out var compT6) &&
                     poolT7.TryGet(id, out var compT7))
                 {
-                    yield return (compT1, compT2, compT3, compT4, compT5, compT6, compT7);
+                    if (filter == null || filter(id))
+                        yield return (compT1, compT2, compT3, compT4, compT5, compT6, compT7);
                 }
             }
         }
@@ -701,7 +709,7 @@ public class ECS
     /// <returns>
     /// An enumerable of tuples containing components of type T1 through T8 from entities that have all.
     /// </returns>
-    public IEnumerable<(T1, T2, T3, T4, T5, T6, T7, T8)> Query<T1, T2, T3, T4, T5, T6, T7, T8>()
+    public IEnumerable<(T1, T2, T3, T4, T5, T6, T7, T8)> Query<T1, T2, T3, T4, T5, T6, T7, T8>(Func<EntityID, bool>? filter = null)
     {
         int[] componentIds = {
         GetComponentIndex<T1>(), GetComponentIndex<T2>(), GetComponentIndex<T3>(),
@@ -752,7 +760,8 @@ public class ECS
                     poolT5.TryGet(id, out var compT5) && poolT6.TryGet(id, out var compT6) &&
                     poolT7.TryGet(id, out var compT7) && poolT8.TryGet(id, out var compT8))
                 {
-                    yield return (compT1, compT2, compT3, compT4, compT5, compT6, compT7, compT8);
+                    if (filter == null || filter(id))
+                        yield return (compT1, compT2, compT3, compT4, compT5, compT6, compT7, compT8);
                 }
             }
         }
@@ -773,7 +782,7 @@ public class ECS
     /// <returns>
     /// An enumerable of tuples containing components of type T1 through T9 from entities that have all.
     /// </returns>
-    public IEnumerable<(T1, T2, T3, T4, T5, T6, T7, T8, T9)> Query<T1, T2, T3, T4, T5, T6, T7, T8, T9>()
+    public IEnumerable<(T1, T2, T3, T4, T5, T6, T7, T8, T9)> Query<T1, T2, T3, T4, T5, T6, T7, T8, T9>(Func<EntityID, bool>? filter = null)
     {
         int[] componentIds = {
         GetComponentIndex<T1>(), GetComponentIndex<T2>(), GetComponentIndex<T3>(),
@@ -828,7 +837,8 @@ public class ECS
                     poolT7.TryGet(id, out var compT7) && poolT8.TryGet(id, out var compT8) &&
                     poolT9.TryGet(id, out var compT9))
                 {
-                    yield return (compT1, compT2, compT3, compT4, compT5, compT6, compT7, compT8, compT9);
+                    if (filter == null || filter(id))
+                        yield return (compT1, compT2, compT3, compT4, compT5, compT6, compT7, compT8, compT9);
                 }
             }
         }
@@ -850,7 +860,7 @@ public class ECS
     /// <returns>
     /// An enumerable of tuples containing components of type T1 through T10 from entities that have all.
     /// </returns>
-    public IEnumerable<(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)> Query<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>()
+    public IEnumerable<(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)> Query<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(Func<EntityID, bool>? filter = null)
     {
         int[] componentIds = {
         GetComponentIndex<T1>(), GetComponentIndex<T2>(), GetComponentIndex<T3>(),
@@ -908,7 +918,8 @@ public class ECS
                     poolT7.TryGet(id, out var compT7) && poolT8.TryGet(id, out var compT8) &&
                     poolT9.TryGet(id, out var compT9) && poolT10.TryGet(id, out var compT10))
                 {
-                    yield return (compT1, compT2, compT3, compT4, compT5, compT6, compT7, compT8, compT9, compT10);
+                    if (filter == null || filter(id))
+                        yield return (compT1, compT2, compT3, compT4, compT5, compT6, compT7, compT8, compT9, compT10);
                 }
             }
         }
