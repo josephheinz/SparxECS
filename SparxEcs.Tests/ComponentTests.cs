@@ -10,6 +10,11 @@ public class ComponentTests
         public int X;
     }
 
+    public struct B
+    {
+        public int Y;
+    }
+
     [Fact]
     public void Test_RegisterComponent_AssignsComponentID()
     {
@@ -54,6 +59,50 @@ public class ComponentTests
         Assert.Equal(emptyA.X, ecs.Get<A>(entity).X);
     }
 
+    [Fact]
+    public void Test_GetComponent_ReturnsCorrectValue()
+    {
+        ECS ecs = new ECS();
 
+        var entity = ecs.AddEntity();
+        var comp = new A { X = 2 };
+
+        ecs.RegisterComponent<A>();
+        ecs.Add<A>(entity, comp);
+
+        Assert.Equal(comp, ecs.Get<A>(entity));
+    }
+
+    [Fact]
+    public void Test_HasComponent_WorksAsExpected()
+    {
+        ECS ecs = new ECS();
+
+        var entity = ecs.AddEntity();
+        var comp = new A { X = 2 };
+
+        ecs.RegisterComponent<A>();
+        ecs.Add<A>(entity, comp);
+
+        Assert.True(ecs.HasComponent<A>(entity));
+    }
+
+    [Fact]
+    public void Test_AddMultipleComponents_ToSameEntity()
+    {
+        ECS ecs = new ECS();
+
+        var entity = ecs.AddEntity();
+        var compA = new A { X = 2 };
+        var compB = new B { Y = 3 };
+
+        ecs.RegisterComponent<A>();
+        ecs.RegisterComponent<B>();
+        ecs.Add<A>(entity, compA);
+        ecs.Add<B>(entity, compB);
+
+        Assert.True(ecs.HasComponent<A>(entity));
+        Assert.True(ecs.HasComponent<B>(entity));
+    }
 }
 

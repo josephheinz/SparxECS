@@ -105,6 +105,7 @@ public class ECS
     public void Add<T>(EntityID id, T component = default!)
     {
         if (!ValidateEntity(id)) return;
+        if(!ValidateComponent<T>()) throw new KeyNotFoundException($"{nameof(T)} is not registered");
         if (component == null)
         {
             throw new ArgumentNullException($"{nameof(component)} : Cannot add a null component");
@@ -116,9 +117,7 @@ public class ECS
         {
             return;
         }
-
-        ComponentMask mask = entityMasks[id];
-        SetComponentMask<T>(mask, 1);
+        SetComponentMask<T>(id, 1);
 
         pool.Set(id, component);
 
@@ -145,8 +144,7 @@ public class ECS
             return;
         }
 
-        ComponentMask mask = entityMasks[id];
-        SetComponentMask<T>(mask, 1);
+        SetComponentMask<T>(id, 1);
         pool.Set(id, component);
     }
 
@@ -157,6 +155,7 @@ public class ECS
     /// <returns>Value of entity's component or null if entity doesn't have component</param>
     public T? Get<T>(EntityID id)
     {
+        if(!HasComponent<T>(id)) return default(T);
         SparseSet<T> pool = GetComponentPool<T>();
         if (pool.TryGet(id, out T component)) return component;
         return default(T);
@@ -260,8 +259,7 @@ public class ECS
         if (pool.TryGet(source, out var comp))
         {
             pool.Set(destination, comp);
-            ComponentMask mask = entityMasks[destination];
-            SetComponentMask<T>(mask, 1);
+            SetComponentMask<T>(destination, 1);
         }
     }
 
@@ -300,19 +298,21 @@ public class ECS
     /// </summary>
     /// <param name="mask">The mask being set</param>
     /// <param name="value">The value being set</param>
-    private void SetComponentMask<Component>(ComponentMask mask, byte value)
+    private void SetComponentMask<T>(int maskId, byte value)
     {
-        int bitPos = GetComponentIndex<Component>();
+        var mask = entityMasks[maskId];
+        int bitPos = GetComponentIndex<T>();
         mask.Set(bitPos, value);
+        entityMasks[maskId] = mask;
     }
 
     /// <summary>
     /// Gets the index of a component in the ECS component registry
     /// </summary>
     /// <returns>The id of the component in the registry</returns>
-    private int GetComponentIndex<Component>()
+    private int GetComponentIndex<T>()
     {
-        if (typeToId.TryGetValue(typeof(Component), out int index)) return index;
+        if (typeToId.TryGetValue(typeof(T), out int index)) return index;
         return -1;
     }
 
