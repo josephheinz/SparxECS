@@ -51,8 +51,7 @@ public class ComponentTests
 
         Assert.True(ecs.HasComponent<A>(entity));
 
-        var remove = ecs.Remove<A>(entity);
-        Assert.True(remove);
+        ecs.Remove<A>(entity);
         Assert.False(ecs.HasComponent<A>(entity));
 
         A emptyA = default(A);
@@ -103,6 +102,6 @@ public class ComponentTests
 
         Assert.True(ecs.HasComponent<A>(entity));
         Assert.True(ecs.HasComponent<B>(entity));
-    }
+    } 
 }
 

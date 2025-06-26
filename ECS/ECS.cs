@@ -165,20 +165,19 @@ public class ECS
     /// Removes a component T from an entity
     /// </summary>
     /// <param name="id">Id of the entity being affected</param>
-    public bool Remove<T>(EntityID id)
+    public void Remove<T>(EntityID id)
     {
-        if (!ValidateEntity(id)) return false;
-        if (!HasComponent<T>(id)) return false;
-        if (!ValidateComponent<T>()) return false;
+        if (!ValidateEntity(id)) return;
+        if (!HasComponent<T>(id)) return;
+        if (!ValidateComponent<T>()) return;
 
         SparseSet<T> pool = GetComponentPool<T>();
-        if (!pool.TryGet(id, out T component)) return false;
+        if (!pool.TryGet(id, out T component)) return;
 
         ComponentMask mask = entityMasks[id];
         int compId = typeToId[typeof(T)];
         pool.Delete(id);
         mask.Remove(compId);
-        return true;
     }
 
     /// <summary>
