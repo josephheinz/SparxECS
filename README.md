@@ -1,6 +1,5 @@
-Absolutely! Here's a professional, clear, and general-purpose README.md template for your SparxEcs package that you can use both on GitHub and NuGet:
-
 # SparxEcs
+![NuGet Downloads](https://img.shields.io/nuget/dt/SparxECS) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/josephheinz/SparxECS) ![GitHub License](https://img.shields.io/github/license/josephheinz/SparxECS) ![NuGet Version](https://img.shields.io/nuget/v/SparxECS)
 
 A lightweight, generic Entity Component System (ECS) library for C# projects.
 
