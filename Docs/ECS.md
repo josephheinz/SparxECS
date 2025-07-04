@@ -1,4 +1,3 @@
-````markdown
 # SparxEcs ECS Documentation
 
 ## Overview
@@ -23,8 +22,6 @@ A readonly struct representing the ID of an entity.
   ```csharp
   EntityID id = 5;
   int rawId = id;
-````
-
 ---
 
 ## Class: `ECS`

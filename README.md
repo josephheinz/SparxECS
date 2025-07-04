@@ -1,6 +1,5 @@
 Absolutely! Here's a professional, clear, and general-purpose README.md template for your SparxEcs package that you can use both on GitHub and NuGet:
 
-````markdown
 # SparxEcs
 
 A lightweight, generic Entity Component System (ECS) library for C# projects.
@@ -42,9 +41,7 @@ dotnet add package SparxEcs
 
 Or via the NuGet Package Manager:
 
-```
 Install-Package SparxEcs
-```
 
 ---
 
