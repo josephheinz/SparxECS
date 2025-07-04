@@ -58,6 +58,10 @@ public class SparseSet<T> : ISparseSet
         return false;
     }
 
+    /// <summary>
+    /// Returns whether or not a given entity exists in this sparse set
+    /// </summary>
+    /// <returns>True if entity is in this sparse set</returns>
     public bool Has(EntityID id)
     {
         return GetDenseIndex(id) != -1;
@@ -162,6 +166,10 @@ public class SparseSet<T> : ISparseSet
         return -1;
     }
 
+    /// <summary>
+    /// Returns the length of the dense list
+    /// </summary>
+    /// <returns>The length of the dense list</returns>
     public int Size()
     {
         return dense.Count;

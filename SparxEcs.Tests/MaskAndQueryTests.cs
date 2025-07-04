@@ -134,7 +134,7 @@ public class MaskAndQueryTests
             x++;
         }
 
-        Assert.False(outputIds.Contains(new A { X = 6 }));
+        Assert.DoesNotContain(new A { X = 6 }, outputIds);
     }
 
     [Fact]

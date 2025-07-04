@@ -46,6 +46,10 @@ public class ECS
         idToType.Add(typeof(T));
     }
 
+    /// <summary>
+    /// Makes sure that the given component of type T is registered
+    /// </summary>
+    /// <returns>True if component is registered</returns>
     public bool ValidateComponent<T>()
     {
         if (!idToType.Contains(typeof(T))) return false;
@@ -335,7 +339,7 @@ public class ECS
 
     /*
      * Turn back before your eyes melt
-     * The follow overloads are NSFW
+     * The following overloads are NSFW
      * */
 
     /// <summary>
