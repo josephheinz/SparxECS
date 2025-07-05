@@ -1,5 +1,5 @@
-# SparxEcs
-![NuGet Downloads](https://img.shields.io/nuget/dt/SparxECS) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/josephheinz/SparxECS) ![GitHub License](https://img.shields.io/github/license/josephheinz/SparxECS) ![NuGet Version](https://img.shields.io/nuget/v/SparxECS) ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/josephheinz/SparxEcs)
+# SparxECS
+![NuGet Downloads](https://img.shields.io/nuget/dt/SparxECS) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/josephheinz/SparxECS) ![GitHub License](https://img.shields.io/github/license/josephheinz/SparxECS) ![NuGet Version](https://img.shields.io/nuget/v/SparxECS) ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/josephheinz/SparxECS)
 
 A lightweight, generic Entity Component System (ECS) library for C# projects.
 
@@ -7,7 +7,7 @@ A lightweight, generic Entity Component System (ECS) library for C# projects.
 
 ## Overview
 
-SparxEcs is a simple and efficient ECS framework designed to help you manage entities and their components with minimal boilerplate and high performance. It supports:
+SparxECS is a simple and efficient ECS framework designed to help you manage entities and their components with minimal boilerplate and high performance. It supports:
 
 - Dynamic entity creation and deletion
 - Generic component registration and management
@@ -15,7 +15,7 @@ SparxEcs is a simple and efficient ECS framework designed to help you manage ent
 - Component cloning and entity duplication
 - Internal reuse of entity IDs for memory efficiency
 
-SparxEcs is suitable for games, simulations, or any application requiring flexible, data-driven architecture.
+SparxECS is suitable for games, simulations, or any application requiring flexible, data-driven architecture.
 
 ---
 
@@ -35,19 +35,19 @@ SparxEcs is suitable for games, simulations, or any application requiring flexib
 Install via NuGet:
 
 ```bash
-dotnet add package SparxEcs
+dotnet add package SparxECS
 ````
 
 Or via the NuGet Package Manager:
 
-Install-Package SparxEcs
+Install-Package SparxECS
 
 ---
 
 ## Usage Example
 
 ```csharp
-using SparxEcs;
+using SparxECS;
 
 var ecs = new ECS();
 
@@ -80,7 +80,7 @@ Full documentation and API references are available in the repository. Feel free
 ## Contributing
 
 Contributions, issues, and feature requests are welcome!
-Please feel free to check the [issues page](https://github.com/josephheinz/SparxEcs/issues).
+Please feel free to check the [issues page](https://github.com/josephheinz/SparxECS/issues).
 
 ---
 

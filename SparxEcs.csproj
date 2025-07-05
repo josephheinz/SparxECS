@@ -8,15 +8,14 @@
     <Authors>Joseph Heinz</Authors>
     <Description>A plug and play entity component system built off of sparse sets</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/josephheinz/SparxEcs</RepositoryUrl>
+    <RepositoryUrl>https://github.com/josephheinz/SparxECS</RepositoryUrl>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="SparxEcs.Tests\**\*.cs" />
-    <PackageReference Include="BenchmarkDotNet" Version="0.15.2" />
+    <Compile Remove="SparxECS.Tests\**\*.cs" />
   </ItemGroup>
 
 </Project>

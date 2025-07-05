@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.0] - 2025-07-04
+
+### Changed
+
+- Namespace to `SparxECS` to match the NuGet package, breaking all current uses of the package until the `using SparxEcs;` is updated to `using SparxECS;`
+
 ## [1.0.0] - 2025-07-03
 
 ### Added
@@ -18,4 +24,5 @@
 - ECS
     - A conjoining of the three previous systems which includes a public API for adding entities and assigning them components, then querying for entities with components and changing their data
 
+[2.0.0]: https://github.com/josephheinz/SparxECS/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/josephheinz/SparxEcs/releases/tag/v1.0.0
