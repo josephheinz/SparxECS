@@ -1,6 +1,6 @@
 # ComponentMask
 
-Namespace: `SparxEcs`
+Namespace: `SparxECS`
 
 ---
 

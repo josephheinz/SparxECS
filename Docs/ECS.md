@@ -1,4 +1,4 @@
-# SparxEcs ECS Documentation
+# SparxECS ECS Documentation
 
 ## Overview
 

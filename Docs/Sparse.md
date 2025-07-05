@@ -1,6 +1,6 @@
 # Sparse
 
-Namespace: `SparxEcs`
+Namespace: `SparxECS`
 
 ---
 

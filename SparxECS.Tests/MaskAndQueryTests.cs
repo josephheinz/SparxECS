@@ -1,6 +1,6 @@
-namespace SparxEcs.Tests;
+namespace SparxECS.Tests;
 
-using SparxEcs;
+using SparxECS;
 using Xunit;
 
 public class MaskAndQueryTests

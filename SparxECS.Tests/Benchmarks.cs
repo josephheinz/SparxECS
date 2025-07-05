@@ -1,8 +1,8 @@
-namespace SparxEcs.Tests;
+namespace SparxECS.Tests;
 
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
-using SparxEcs;
+using SparxECS;
 using Xunit;
 
 [MemoryDiagnoser]

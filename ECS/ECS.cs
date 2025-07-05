@@ -1,4 +1,4 @@
-namespace SparxEcs;
+namespace SparxECS;
 
 public readonly struct EntityID
 {

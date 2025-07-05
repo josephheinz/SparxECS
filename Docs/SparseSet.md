@@ -1,6 +1,6 @@
 # SparseSet<T> and ISparseSet Interface
 
-Namespace: `SparxEcs`
+Namespace: `SparxECS`
 
 ---
 

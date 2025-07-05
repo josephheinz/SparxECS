@@ -1,5 +1,5 @@
 # SparxEcs
-![NuGet Downloads](https://img.shields.io/nuget/dt/SparxECS) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/josephheinz/SparxECS) ![GitHub License](https://img.shields.io/github/license/josephheinz/SparxECS) ![NuGet Version](https://img.shields.io/nuget/v/SparxECS)
+![NuGet Downloads](https://img.shields.io/nuget/dt/SparxECS) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/josephheinz/SparxECS) ![GitHub License](https://img.shields.io/github/license/josephheinz/SparxECS) ![NuGet Version](https://img.shields.io/nuget/v/SparxECS) ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/josephheinz/SparxEcs)
 
 A lightweight, generic Entity Component System (ECS) library for C# projects.
 
